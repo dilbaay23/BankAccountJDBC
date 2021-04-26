@@ -6,8 +6,13 @@ import entity.Customer;
 import entity.Transfer;
 import service.BankAccountService;
 import service.CustomerService;
+import service.TransferService;
 import service.impl.BankAccountServiceImpl;
 import service.impl.CustomerServiceImpl;
+import service.impl.TransferServiceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static utility.KeyboardUtility.*;
 import static utility.MenuUtility.*;
@@ -20,6 +25,7 @@ public class AppController {
     private int loginId= 0;
     private final BankAccountService bankAccountService = new BankAccountServiceImpl();
     private final CustomerService customerService= new CustomerServiceImpl();
+    private final TransferService transferService= new TransferServiceImpl();
     private Customer customer=null;
 
     public void start(){
@@ -60,7 +66,7 @@ public class AppController {
     private void showMenu() {
         String title= "*  Main menu   *";
         printTitle(title);
-        String[] options = {"Create An Account", "Account Details", "Transfer Details", "Transfer to Another Account", "Exit"};
+        String[] options = {"Create An Account", "Account Details", "Deposit", "Transfer Details", "Transfer to Another Account", "Exit"};
         int chosenMenuOption = askForChoice(options);
         chooseMenuOption(chosenMenuOption);
     }
@@ -75,14 +81,30 @@ public class AppController {
                 accountDetails();
                 break;
             case 2:
-                transferDetails();
+                deposit();
                 break;
             case 3:
-                transferToOtherAccount();
+                transferDetails();
                 break;
             case 4:
+                transferToOtherAccount();
+                break;
+            case 5:
                 quit();
                 break;
+        }
+    }
+
+    private void deposit() {
+        BankAccount bankAccount = getAccountByCustomerId(loginId);
+        if(bankAccount==null){
+            inValidLoginAccount();
+        }else{
+            double deposit = askForDouble("How much money do you want to add  your account?");
+            bankAccount.addFunds(deposit);
+            System.out.printf("Deposit of €%.2f successful. Your new balance is €%.2f.\n",deposit,bankAccount.getBalance());
+            bankAccountService.updateBalance(bankAccount);
+            showMenu();
         }
     }
 
@@ -92,12 +114,19 @@ public class AppController {
             inValidLoginAccount();
         }else{
             BankAccount bankAccountTo = askRecipientCustomerIdForValidAccount();
-            Transfer transfer = new Transfer();
             double amount = askForDouble("How much do you want to transfer from your account?");
-            transfer.transferFromAccount1ToAccount2(bankAccountFrom,bankAccountTo,amount);
-            bankAccountService.updateBalance(bankAccountFrom);
-            bankAccountService.updateBalance(bankAccountTo);
+            Transfer transfer = new Transfer(bankAccountFrom.getId(), bankAccountTo.getId(),amount);
+            int transferValue = transfer.transferFromAccount1ToAccount2(bankAccountFrom,bankAccountTo,amount);
+          //  System.out.println(transfer.getAmount() +" "+transfer.getFundFromAccountId()+ " "+ transfer.getFundToAccountId());
 
+            if(transferValue>0){
+                bankAccountService.updateBalance(bankAccountFrom);
+                bankAccountService.updateBalance(bankAccountTo);
+                transferService.save(transfer);
+
+            }
+
+            showMenu();
         }
 
     }
@@ -107,26 +136,37 @@ public class AppController {
     }
 
     private void transferDetails() {
-        BankAccount bankAccountFrom = getAccountByCustomerId(loginId);
-        if(bankAccountFrom==null){
+        BankAccount bankAccount= getAccountByCustomerId(loginId);
+        if(bankAccount==null){
             inValidLoginAccount();
         }else{
-            Transfer transfer = new Transfer(bankAccountFrom.getId());
+           transferService.getAllTransfersFromLoggedInCustomer(bankAccount.getId());
+           thickLine();
+             transferService.getAllTransfersToLoggedInCustomer(bankAccount.getId());
+            showMenu();
+
         }
 
-
     }
+
     private BankAccount askRecipientCustomerIdForValidAccount(){
         BankAccount bankAccountTo = null;
         while (bankAccountTo==null){
             int secondAccountId = askForInt("Enter the CUSTOMER ID of the Recipient Account");
-             bankAccountTo = getAccountByCustomerId(secondAccountId);
-             if(bankAccountTo==null){
-                 System.out.println("There is no Account by this customer Id ");
-                 if(!askYorN("Do you want to enter new customer Id of the Recipient Account")){
-                     showMenu();
-                 }
-             }
+            if(secondAccountId==loginId){
+                System.out.println("It is your customer Id. ");
+                if(!askYorN("Do you want to enter NEW CUSTOMER ID of the Recipient Account")){
+                    showMenu();
+                }
+            }else {
+                bankAccountTo = getAccountByCustomerId(secondAccountId);
+                if (bankAccountTo == null) {
+                    System.out.println("There is no Account by this customer Id ");
+                    if (!askYorN("Do you want to enter NEW CUSTOMER ID  of the Recipient Account")) {
+                        showMenu();
+                    }
+                }
+            }
         }
         return bankAccountTo;
     }

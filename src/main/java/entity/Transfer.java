@@ -13,15 +13,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transfer {
-    private long id;
+    private Long id;
     private Long fundFromAccountId;
     private Long fundToAccountId;
     private LocalDateTime createdAt;
     private double amount;
 
-    public Transfer(Long fundFromAccountId) {
+    public Transfer(Long fundFromAccountId, Long fundToAccountId, double amount) {
         this.fundFromAccountId = fundFromAccountId;
-
+        this.fundToAccountId = fundToAccountId;
+      //  this.createdAt = LocalDateTime.now();
+        this.amount = amount;
     }
 
     public int transferFromAccount1ToAccount2(BankAccount accountFrom, BankAccount accountTo, double amount){
