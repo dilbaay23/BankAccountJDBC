@@ -9,4 +9,8 @@ import entity.Customer;
 public interface BankAccountDao {
     int save(BankAccount account);
     BankAccount getAccountByCustomerId(Long customerId);
+    int deleteAccount(BankAccount account);
+    int deleteAccountById(int id);
+    int updateBalance(BankAccount account);
+
 }

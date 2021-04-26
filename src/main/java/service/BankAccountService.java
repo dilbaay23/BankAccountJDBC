@@ -9,4 +9,7 @@ import entity.BankAccount;
 public interface BankAccountService {
     boolean save(BankAccount bankAccount);
     BankAccount getAccountByCustomerId(Long customerId);
+    int deleteAccount(BankAccount account);
+    int deleteAccountById(int id);
+    int updateBalance(BankAccount account);
 }

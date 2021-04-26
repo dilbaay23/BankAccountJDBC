@@ -95,6 +95,8 @@ public class AppController {
             Transfer transfer = new Transfer();
             double amount = askForDouble("How much do you want to transfer from your account?");
             transfer.transferFromAccount1ToAccount2(bankAccountFrom,bankAccountTo,amount);
+            bankAccountService.updateBalance(bankAccountFrom);
+            bankAccountService.updateBalance(bankAccountTo);
 
         }
 
@@ -117,7 +119,7 @@ public class AppController {
     private BankAccount askRecipientCustomerIdForValidAccount(){
         BankAccount bankAccountTo = null;
         while (bankAccountTo==null){
-            int secondAccountId = askForInt("Enter the customer id of the Recipient Account");
+            int secondAccountId = askForInt("Enter the CUSTOMER ID of the Recipient Account");
              bankAccountTo = getAccountByCustomerId(secondAccountId);
              if(bankAccountTo==null){
                  System.out.println("There is no Account by this customer Id ");

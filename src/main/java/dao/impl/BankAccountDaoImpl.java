@@ -53,4 +53,52 @@ public class BankAccountDaoImpl implements BankAccountDao {
             }
         }
 
+    @Override
+    public int updateBalance(BankAccount account) {
+        try(Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql= "UPDATE javadevt_genk_08.BankAccount SET balance=? WHERE id=?";
+
+            PreparedStatement ps= conn.prepareStatement(sql);
+            ps.setDouble(1, account.getBalance());
+            ps.setLong(2,account.getId());
+            int result= ps.executeUpdate();
+            return result;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw  new RuntimeException(throwables);
+        }
+
+    }
+
+    @Override
+    public int deleteAccount(BankAccount account) {
+        try(Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql= "DELETE FROM javadevt_genk_08.BankAccount WHERE id=?";
+            PreparedStatement ps= conn.prepareStatement(sql);
+            ps.setLong(1,account.getId());
+            return ps.executeUpdate();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw  new RuntimeException(throwables);
+        }
+
+    }
+
+    @Override
+    public int deleteAccountById(int id) {
+
+        try(Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            String sql= "DELETE FROM javadevt_genk_08.BankAccount WHERE id=?";
+            PreparedStatement ps= conn.prepareStatement(sql);
+            ps.setLong(1,id);
+            return ps.executeUpdate();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw  new RuntimeException(throwables);
+        }
+    }
+
 }

@@ -28,4 +28,20 @@ public class BankAccountServiceImpl implements BankAccountService {
     public BankAccount getAccountByCustomerId(Long customerId) {
         return bankAccountDao.getAccountByCustomerId(customerId);
     }
+
+    @Override
+    public int deleteAccount(BankAccount account) {
+        return bankAccountDao.deleteAccount(account);
+    }
+
+    @Override
+    public int deleteAccountById(int id) {
+        return bankAccountDao.deleteAccountById(id);
+    }
+
+    @Override
+    public int updateBalance(BankAccount account) {
+        return bankAccountDao.updateBalance(account);
+    }
+
 }
