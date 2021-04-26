@@ -1,5 +1,7 @@
 package utility;
 
+
+
 import exception.IllegalDateException;
 
 import java.time.LocalDate;
@@ -41,6 +43,17 @@ public abstract class KeyboardUtility {
             }
         }
     }
+    public static double askForDouble(String message) {
+        while (true) {
+            String input = ask(message);
+            try {
+                return Double.parseDouble(input);
+            } catch (Exception e) {
+                System.out.println(INVALID_MSG);
+            }
+        }
+    }
+
     public static String ask(String message) {
         System.out.println(message);
         return KEYBOARD.nextLine();
